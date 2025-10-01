@@ -10,6 +10,17 @@
 - [Investigating Certificates](./02_general/03_certs.md)
 - [Investigating Binaries](./02_general/04_binaries.md)
 
+## Beaconing Behaviour
+- [Introduction to Histograms](./03_beacon/00_histograms.md)
+- [Connection Interval Histogram](./03_beacon/01_histograms_interval.md)
+- [Connection Size Histogram](./03_beacon/02_histograms_size.md)
+- [Hourly-Connection Graph](./03_beacon/03_hourly.md)
+- [Beaconing](./03_beacon/04_beacon.md)
+- [Jitter](./03_beacon/05_jitter.md)
+- [Data Jitter](./03_beacon/06_data_jitter.md)
+
+
+
 ## Investigating C2 over HTTP/S
 TODO
 
