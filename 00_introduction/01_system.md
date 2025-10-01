@@ -10,9 +10,9 @@ Overall -> Using multiple tools, layers of analyses (abstraction) to go from bro
 - WireShark (trace)
 
 ## Endpoint
-### Dynamic
+### Active
 - System Informer
-### Static
+### Passive
 - Sysmon
 - PowerShell SB Logs
 - WEL
