@@ -4,11 +4,11 @@
 - [Experimental Setup](./00_introduction/02_setup.md)
 
 ## General Investigations
-- [Investigating IP Addresses]()
-- [Investigating Ports]()
-- [Investigating Domains]()
-- [Investigating Certificates]()
-- [Investigating Binaries]()
+- [Investigating IP Addresses](./02_general/00_ips.md)
+- [Investigating Ports](./02_general/01_ports.md)
+- [Investigating Domains](./02_general/02_domains.md)
+- [Investigating Certificates](./02_general/03_certs.md)
+- [Investigating Binaries](./02_general/04_binaries.md)
 
 
 
