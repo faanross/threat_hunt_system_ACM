@@ -1,6 +1,6 @@
 ## ACM List
 
-Reference the IP in the ACM hint list and see if there is an entry for it.
+Reference the IP in the ACM hint list and see if there is an entry for it. (TODO: Link)
 
 ## ipinfo.io
 
@@ -16,8 +16,8 @@ Use [ipinfo.io](http://ipinfo.io/) to look at a variety of important pieces of i
 
 ### Hostname
 - Many hastily configured malicious servers don't have a reverse DNS (PTR) record set up, so this field would be blank. In other words an outbound connection directly to an IP, and not a domain, should be viewed with some level of suspicion. 
-- A hostname like c2.evil-domain.ru or update.system-check.xyz is an obvious indicator of malicious intent.
-- A hostname like server1.some-random-hosting.com or a random string of characters might indicate a generic, non-production server, which is more typical of temporary malicious infrastructure.
+- A hostname like `c2.evil-domain.ru` or `update.system-check.xyz` is an obvious indicator of malicious intent.
+- A hostname like `server1.some-random-hosting.com` or a random string of characters might indicate a generic, non-production server, which is more typical of temporary malicious infrastructure.
 - Something else to look for is the number of domains associated with the IP - a very high number of hostnames (like >1000) associated with a single IP address can be an indicator of something malicious, but it requires context.
 
 

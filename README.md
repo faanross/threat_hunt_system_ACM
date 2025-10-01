@@ -10,7 +10,14 @@
 - [Investigating Certificates](./02_general/03_certs.md)
 - [Investigating Binaries](./02_general/04_binaries.md)
 
+## Investigating C2 over HTTP/S
+TODO
 
+## Investigating C2 over DNS
+TODO
+
+## Investigating C2 Agent-to-Agent Communication
+TODO
 
 ## Core Toolbox
 - [RITA](./01_core/rita/moc.md)
