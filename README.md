@@ -42,6 +42,8 @@ TODO
 - [WEL](./01_core/wel_logs/moc.md)
 
 
+## Open-Source C2 Framework Guide
+- [AdaptixC2]
 
 
 ...
