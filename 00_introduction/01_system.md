@@ -20,4 +20,10 @@ Overall -> Using multiple tools, layers of analyses (abstraction) to go from bro
 
 NOTE: For now let's 100% prioritize investigation-based threat hunting only, there will be a time for
 including Detection Engineering, but that's an entirely different rabbit-hole, so for now let's remain
-fully focussed on the core tenets + techniques of our own custom network threat hunting system. 
+fully focussed on the core tenets + techniques of our own custom network threat hunting system.
+
+
+
+___
+
+[BACK TO MAIN](../README.md)
