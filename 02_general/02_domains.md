@@ -47,4 +47,6 @@ Use [whois.com](http://whois.com/) to look at a variety of important pieces of i
 - Conversely, serverHold or clientHold are considered "punitive" - the registrar or registry has actively taken the domain offline. This is often done in response to confirmed malicious activity (phishing, C2) or non-payment. 
 
   
-  
+___
+
+[BACK TO MAIN](../README.md)
