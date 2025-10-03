@@ -27,7 +27,16 @@ TODO
 ## Investigating C2 over DNS
 TODO
 
+## Investigating C2 over ICMP
+TODO
+
+## Investigating C2 over NTP
+TODO
+
 ## Investigating C2 Agent-to-Agent Communication
+TODO
+
+## Investigating Endpoints
 TODO
 
 ## Core Toolbox
