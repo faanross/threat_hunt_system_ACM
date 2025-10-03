@@ -44,7 +44,6 @@ TODO
 - [AC-Hunter](./core/ach/moc.md)
 - [Suricata](./core/suricata/moc.md)
 - [Zeek](./core/zeek/moc.md)
-- [WireShark](./core/wireshark/moc.md)
 - [System Informer](./core/sysinformer/moc.md)
 - [Sysmon](./core/sysmon/moc.md)
 - [PowerShell SB Logs](./core/ps_sb_logs/moc.md)
@@ -52,6 +51,7 @@ TODO
 
 ## Extended Toolbox
 - Zui
+- [WireShark](./core/wireshark/moc.md)
 
 ## Open-Source C2 Framework Guide
 - [AdaptixC2](./c2s/adaptix/moc.md)
