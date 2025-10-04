@@ -196,3 +196,145 @@ For the most demanding environments-networks running at 10 Gbps or higher-there'
 ```
 
 For most learning and even production deployments, PF_RING isn't necessary. We'll use AF_PACKET in this course, which provides excellent performance for networks up to several gigabits per second without the complexity or cost of PF_RING.
+
+
+### **Stage 2: Packet Filtering - Reducing Unnecessary Load**
+
+Before Zeek processes packets, they pass through a packet filter implemented using BPF (Berkeley Packet Filter). This filter runs in kernel space and can discard packets before they're delivered to Zeek, dramatically reducing the processing load.
+
+You might wonder why you'd want to filter packets when the goal is comprehensive network visibility. The answer is that not all network traffic is relevant to security monitoring, and processing irrelevant traffic wastes resources that could be used for analyzing important traffic.
+
+**Common filtering scenarios:**
+
+|Traffic Type|Should Monitor?|Reasoning|
+|---|---|---|
+|Internet-bound traffic|Yes|Critical for detecting C2, data exfiltration|
+|Internal server traffic|Yes|Important for lateral movement detection|
+|Printer to file server|Probably not|High volume, low security relevance|
+|Backup traffic|Probably not|High volume, legitimate file transfers|
+|Network management (SNMP)|Maybe|Depends on your monitoring goals|
+
+BPF filters are specified using a simple syntax. Here are some examples:
+
+```
+# Monitor only TCP traffic
+tcp
+
+# Monitor web traffic (HTTP and HTTPS)
+port 80 or port 443
+
+# Monitor all traffic except to/from backup server
+not host 192.168.1.50
+
+# Monitor only outbound traffic from internal network
+src net 192.168.0.0/16 and dst net not 192.168.0.0/16
+
+# Complex: Monitor HTTP(S) and DNS, but exclude internal DNS server
+(port 80 or port 443 or port 53) and not (host 192.168.1.10 and port 53)
+```
+
+The key principle is to be thoughtful about what you filter out. Filter aggressively enough to reduce unnecessary load, but not so aggressively that you lose visibility into important security events. When in doubt, err on the side of capturing more rather than less-you can always adjust your filters based on experience.
+
+In case you wanted to alter your BPF filter, this can typically be done directly **within Zeek's own configuration files**.
+
+Think of it as giving Zeek a set of instructions on what traffic to even look at in the first place.
+
+#### Where and How to Configure BPF Filters
+
+The most common place to set your BPF filters is in the `local.zeek` file. This is the primary file for site-specific Zeek configurations. If you're running a Zeek cluster, you'll typically find this file in `<zeek_install_dir>/share/zeek/site/`.
+
+You'll use the `restrict_filters` variable to define your BPF rules. Let's take a look at how you'd implement the examples from above.
+
+```
+# Redefine the restrict_filters to add our custom BPF rules.
+redef restrict_filters += {
+    # Monitor only TCP traffic
+    ["only-tcp"] = "tcp",
+
+    # Monitor web traffic (HTTP and HTTPS)
+    ["web-traffic"] = "port 80 or port 443",
+
+    # Monitor all traffic except to/from backup server
+    ["exclude-backup-server"] = "not host 192.168.1.50",
+
+    # Monitor only outbound traffic from internal network
+    ["outbound-only"] = "src net 192.168.0.0/16 and not dst net 192.168.0.0/16",
+
+    # Complex: Monitor HTTP(S) and DNS, but exclude internal DNS server
+    ["web-and-dns-filtered"] = "(port 80 or port 443 or port 53) and not (host 192.168.1.10 and port 53)"
+};
+```
+
+
+**Key things to note:**
+
+- **`redef restrict_filters +=`**: This is important. The `+=` appends your filters to any existing ones. If you use a single `=`, you'll overwrite the default filters.
+- **`["filter-name"]`**: This is just a descriptive name for your filter. It's good practice to give each filter a unique and meaningful name.
+- **`"bpf-syntax"`**: This is where you place your actual BPF filter, just like in your course examples.
+
+#### Another Method: Using `PacketFilter::exclude`
+
+You can also use the `PacketFilter::exclude` function within the `zeek_init()` event in a seperate Zeek script. This can be useful for more dynamic or complex filtering scenarios.
+
+Here's an example of how you might use this method in a custom script:
+
+
+```
+event zeek_init() {
+    # Exclude traffic to and from the backup server
+    PacketFilter::exclude("exclude-backup-server", "host 192.168.1.50");
+}
+```
+
+This achieves the same goal as the `restrict_filters` example. For most common use cases, sticking with `restrict_filters` is perfectly fine and often easier to manage.
+
+After you've made changes to your configuration, you'll need to restart Zeek for the new BPF filters to take effect. You can verify that your filters have been applied by using the command `zeekctl diag`.
+
+
+### **Stage 3: The Event Engine - The Heart of Zeek**
+
+Now we reach the most complex and interesting part of Zeek's architecture: the event engine. This is where Zeek transforms raw packets into the high-level events that your scripts respond to. The event engine is what makes Zeek fundamentally different from packet inspection tools.
+
+The event engine has three main responsibilities: protocol analysis, connection state management, and event generation. Let's examine each.
+
+#### **Protocol Analysis: Understanding What's Being Communicated**
+
+When packets arrive at the event engine, Zeek doesn't just look at their raw bytes. Instead, it parses the protocols being used, extracting meaningful information from protocol headers and payloads. Zeek includes built-in analyzers for dozens of protocols, from low-level protocols like IP and TCP up through application protocols like HTTP, DNS, SSH, SSL, and many others.
+
+**Zeek's protocol analysis stack:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   APPLICATION PROTOCOLS                     │
+│   HTTP, DNS, SSL/TLS, SSH, FTP, SMTP, SMB, RDP, etc.        │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+                     ├─→ Extract: URLs, headers, status codes
+                     ├─→ Extract: Query names, response IPs
+                     ├─→ Extract: Certificates, cipher suites
+                     └─→ Extract: Commands, file transfers
+                     │
+┌────────────────────▼────────────────────────────────────────┐
+│                  TRANSPORT PROTOCOLS                        │
+│                    TCP, UDP, ICMP                           │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+                     ├─→ Track: Sequence numbers, ACKs
+                     ├─→ Track: Connection states
+                     └─→ Reassemble: Fragmented packets
+                     │
+┌────────────────────▼────────────────────────────────────────┐
+│                   NETWORK PROTOCOLS                         │
+│                      IP, IPv6                               │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+                     └─→ Extract: Addresses, TTL, flags
+                     │
+┌────────────────────▼────────────────────────────────────────┐
+│                    LINK LAYER                               │
+│                 Ethernet, VLAN Tags                         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+Let's walk through an example to make this concrete. Imagine someone on your network visits a website. Here's what Zeek's protocol analysis does:
+
