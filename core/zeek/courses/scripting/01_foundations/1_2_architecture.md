@@ -91,3 +91,44 @@ Here's a high-level view of the pipeline:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+
+
+
+This diagram shows the complete path that network traffic takes through Zeek. Let's examine each stage in detail, understanding not just what happens but why it's designed this way and what implications it has for your deployment and scripting.
+
+### **Stage 1: Packet Acquisition - Getting Traffic Into Zeek**
+
+The first challenge Zeek must solve is getting packets from the network into the application for analysis. This might seem straightforward - after all, operating systems provide mechanisms for applications to capture network traffic - but packet acquisition is actually one of the most critical performance considerations in network monitoring. If Zeek can't acquire packets fast enough to keep up with your network's traffic volume, it will drop packets, resulting in incomplete visibility.
+
+Zeek supports several different packet acquisition methods, each with different performance characteristics and use cases. Understanding these options will help you choose the right approach for your deployment.
+
+
+
+#### **Libpcap: The Default and Most Portable Option**
+
+The default packet acquisition mechanism is `libpcap` (or WinPcap on Windows, though Zeek is rarely deployed on Windows). Libpcap is a portable C library that provides a consistent API for packet capture across different operating systems. When you install Zeek without any special configuration, it uses `libpcap` to capture packets from your network interface.
+
+Here's how libpcap works at a high level:
+
+```
+Network Interface → Kernel Network Stack → Packet Filter (BPF) → Userspace Buffer → Zeek
+```
+
+Packets arrive at your network interface and are processed by the kernel's network stack. A packet filter written in BPF (Berkeley Packet Filter) bytecode runs in kernel space, allowing you to discard irrelevant traffic before it's copied to userspace. The packets that pass the filter are copied to a buffer in userspace where Zeek can access them.
+
+**Advantages of libpcap:**
+
+- **Portability**: Works on Linux, BSD, macOS, and other Unix-like systems with minimal differences
+- **Maturity**: Extremely well-tested and reliable
+- **Simplicity**: Easy to set up with no special configuration required
+- **Flexibility**: Works with any network interface your OS supports
+
+**Limitations of libpcap:**
+
+- **Performance ceiling**: On very high-bandwidth networks (10+ Gbps), libpcap may struggle to keep up
+- **Single-threaded**: Libpcap delivers packets to a single processing thread, creating a bottleneck
+- **Kernel copying overhead**: Every packet must be copied from kernel space to userspace
+
+For many deployments, especially those monitoring networks below 1 Gbps, libpcap performs perfectly well. It's the right choice when you're starting out or when you don't need maximum performance.
+
+
