@@ -132,3 +132,67 @@ Packets arrive at your network interface and are processed by the kernel's netwo
 For many deployments, especially those monitoring networks below 1 Gbps, libpcap performs perfectly well. It's the right choice when you're starting out or when you don't need maximum performance.
 
 
+
+
+#### **AF_PACKET: Linux's Native High-Performance Alternative**
+
+On Linux systems, Zeek can use AF_PACKET instead of libpcap for significantly better performance. AF_PACKET is a Linux-specific interface that allows applications to capture packets with lower overhead than libpcap.
+
+The key advantage of AF_PACKET is its use of memory-mapped buffers. Instead of copying each packet from kernel space to userspace, AF_PACKET sets up a shared memory region that both the kernel and Zeek can access. Packets are written directly into this shared memory, eliminating the copy overhead.
+
+**AF_PACKET packet flow:**
+
+```
+Network Interface → Kernel NIC Driver → Memory-Mapped Ring Buffer → Zeek
+                                         (Shared between kernel and userspace)
+```
+
+**Advantages of AF_PACKET:**
+
+- **Better performance**: Lower CPU overhead and higher packet rates compared to libpcap
+- **Fewer dropped packets**: More efficient handling reduces the risk of packet loss
+- **Native to Linux**: No additional software required on modern Linux systems
+
+**Considerations:**
+
+- **Linux-only**: Not portable to other operating systems
+- **Requires proper configuration**: You need to specify fanout modes and buffer sizes appropriately
+- **More complex setup**: Not as simple as the default libpcap option
+
+For production deployments on Linux, especially those monitoring networks above 1 Gbps, AF_PACKET is generally the better choice. We'll configure it when we install Zeek in Lesson 1.3.
+
+
+#### **PF_RING: The High-Performance Commercial Option**
+
+For the most demanding environments-networks running at 10 Gbps or higher-there's PF_RING, a high-performance packet capture framework developed by ntop. PF_RING provides even better performance than AF_PACKET through several optimizations.
+
+**Key PF_RING features:**
+
+- **Kernel bypass capabilities**: Can deliver packets directly from the network card to userspace, bypassing much of the kernel network stack
+- **Hardware acceleration**: Supports offloading filtering and load balancing to compatible network cards
+- **Better distribution**: More sophisticated algorithms for distributing packets across multiple processing threads
+
+**The PF_RING trade-offs:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      PERFORMANCE                            │
+│                                                             │
+│  Libpcap     <     AF_PACKET     <     PF_RING              │
+│  (Baseline)        (2-3x better)       (3-5x better)        │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                     COMPLEXITY                              │
+│                                                             │
+│  Libpcap     <     AF_PACKET     <     PF_RING              │
+│  (Simple)          (Moderate)          (Complex)            │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                        COST                                 │
+│                                                             │
+│  Libpcap     <     AF_PACKET     <     PF_RING              │
+│  (Free)            (Free)              (License required)   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+For most learning and even production deployments, PF_RING isn't necessary. We'll use AF_PACKET in this course, which provides excellent performance for networks up to several gigabits per second without the complexity or cost of PF_RING.
