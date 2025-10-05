@@ -949,6 +949,689 @@ af_packet_fanout_mode=PACKET_FANOUT_HASH
 - Requires modern Linux kernel
 
 
+#### **Method 3: PF_RING Clustering**
+
+`PF_RING` includes sophisticated clustering capabilities that can distribute traffic across multiple processes or even multiple hosts.
+
+**Advantages:**
+
+- Best performance for very high bandwidth
+- Can distribute across multiple physical hosts
+- Supports hardware offload with compatible NICs
+
+**Disadvantages:**
+
+- Requires PF_RING license
+- More complex setup
+- Additional cost
+
+### **Cluster Deployment Patterns**
+
+Let's look at some common cluster deployment patterns for different scales and requirements.
+
+#### **Small Cluster (1-5 Gbps)**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              SMALL CLUSTER ARCHITECTURE                     │
+│                                                             │
+│                   ┌───────────┐                             │
+│                   │ Manager   │                             │
+│                   │ + Logger  │ (Combined on one host)      │
+│                   └─────┬─────┘                             │
+│                         │                                   │
+│             ┌───────────┼───────────┐                       │
+│             │           │           │                       │
+│             ▼           ▼           ▼                       │
+│        ┌────────┐  ┌────────┐  ┌────────┐                   │
+│        │Worker 1│  │Worker 2│  │Worker 3│                   │
+│        └────────┘  └────────┘  └────────┘                   │
+│                                                             │
+│  Hardware:                                                  │
+│  - Manager/Logger: 4 cores, 16GB RAM, 1TB storage           │
+│  - Each Worker: 8 cores, 32GB RAM, modest storage           │
+│                                                             │
+│  Best for: Small to medium enterprises, branch offices      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### **Medium Cluster (5-20 Gbps)**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              MEDIUM CLUSTER ARCHITECTURE                    │
+│                                                             │
+│               ┌──────────┐        ┌──────────┐              │
+│               │ Manager  │        │  Logger  │              │
+│               └────┬─────┘        └────┬─────┘              │
+│                    │                   │                    │
+│                    └─────────┬─────────┘                    │
+│                              │                              │
+│                    ┌─────────┴─────────┐                    │
+│                    │                   │                    │
+│                    ▼                   ▼                    │
+│               ┌────────┐          ┌────────┐                │
+│               │Proxy 1 │          │Proxy 2 │                │
+│               └───┬────┘          └───┬────┘                │
+│                   │                   │                     │
+│        ┌──────────┼──────┐   ┌────────┼──────────┐          │
+│        │          │      │   │        │          │          │
+│        ▼          ▼      ▼   ▼        ▼          ▼          │
+│    ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐        │
+│    │Work 1 │ │Work 2 │ │Work 3 │ │Work 4 │ │Work 5 │        │
+│    └───────┘ └───────┘ └───────┘ └───────┘ └───────┘        │
+│        ...                           ...                    │
+│                                                             │
+│  Hardware:                                                  │
+│  - Manager: 8 cores, 32GB RAM                               │
+│  - Logger: 4 cores, 16GB RAM, 5TB+ storage                  │
+│  - Proxies: 4 cores, 16GB RAM each                          │
+│  - Workers: 12+ cores, 64GB RAM each                        │
+│                                                             │
+│  Best for: Large enterprises, service providers             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### **Large Cluster (20+ Gbps)**
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│               LARGE CLUSTER ARCHITECTURE                     │
+│                                                              │
+│                      ┌──────────┐                            │
+│                      │ Manager  │                            │
+│                      └────┬─────┘                            │
+│                           │                                  │
+│        ┌──────────────────┼──────────────────┐               │
+│        │                  │                  │               │
+│        ▼                  ▼                  ▼               │
+│   ┌────────┐        ┌────────┐        ┌────────┐             │
+│   │Proxy 1 │        │Proxy 2 │        │Proxy 3 │             │
+│   └───┬────┘        └───┬────┘        └───┬────┘             │
+│       │                 │                 │                  │
+│    [Workers]         [Workers]         [Workers]             │
+│    Rack 1            Rack 2            Rack 3                │
+│    W1-W8             W9-W16            W17-W24               │
+│                                                              │
+│              Separate Logging Infrastructure:                │
+│                                                              │
+│                      ┌──────────┐                            │
+│                      │ Logger   │                            │
+│                      │ Frontend │                            │
+│                      └────┬─────┘                            │
+│                           │                                  │
+│              ┌────────────┼────────────┐                     │
+│              │            │            │                     │
+│              ▼            ▼            ▼                     │
+│         ┌────────┐   ┌────────┐   ┌────────┐                 │
+│         │Storage │   │Storage │   │Storage │                 │
+│         │ Node 1 │   │ Node 2 │   │ Node 3 │                 │
+│         └────────┘   └────────┘   └────────┘                 │
+│                                                              │
+│  Best for: Data centers, ISPs, critical infrastructure       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+
+
+## **PART 3: MEMORY MANAGEMENT AND PERFORMANCE OPTIMIZATION**
+
+### **Understanding Zeek's Memory Usage**
+
+Zeek is a memory-intensive application because it maintains rich state about network connections and protocol sessions. Understanding how Zeek uses memory will help you size your systems appropriately and write scripts that don't cause memory problems.
+
+**Major memory consumers:**
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                ZEEK MEMORY USAGE BREAKDOWN                   │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  CONNECTION STATE (40-60% of memory)                         │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                         │
+│  • Connection records for all active connections             │
+│  • Protocol-specific state (HTTP transactions, DNS queries)  │
+│  • Packet reassembly buffers                                 │
+│                                                              │
+│  SCRIPT STATE (20-40% of memory)                             │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                         │
+│  • Tables and sets maintained by scripts                     │
+│  • Intel framework indicator database                        │
+│  • Statistical tracking structures                           │
+│  • Custom data structures in your scripts                    │
+│                                                              │
+│  PACKET BUFFERS (10-20% of memory)                           │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                         │
+│  • Buffers for incoming packets                              │
+│  • Reassembly buffers for fragmented traffic                 │
+│                                                              │
+│  ZEEK CORE (5-10% of memory)                                 │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━                         │
+│  • Zeek executable and libraries                             │
+│  • Event engine data structures                              │
+│  • Protocol analyzers                                        │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Memory usage estimation:**
+
+Here's a rough formula for estimating Zeek's memory requirements:
+
+```
+Base Memory = 2 GB (Zeek core + base scripts)
+
+Connection Memory = (Active Connections) × (Memory per Connection)
+                  = (Active Connections) × ~10 KB
+
+Script Memory = Variable, depends on your detection scripts
+              = 1-4 GB for typical deployments
+
+Total = Base + Connection Memory + Script Memory
+```
+
+**Example calculations:**
+
+|Network Type|Concurrent Connections|Estimated Memory|
+|---|---|---|
+|Small office (100 Mbps)|~5,000|2 + (5K × 10KB) = ~2.5 GB|
+|Medium enterprise (1 Gbps)|~50,000|2 + (50K × 10KB) = ~3 GB|
+|Large enterprise (10 Gbps)|~500,000|2 + (500K × 10KB) = ~7 GB|
+|Data center (100 Gbps)|~5,000,000|2 + (5M × 10KB) = ~50 GB|
+
+Add 50-100% headroom to these estimates for safety and to account for script memory usage.
+
+
+### **Performance Tuning: Getting the Most from Your Hardware**
+
+Zeek's performance depends on several factors: hardware capabilities, traffic characteristics, configuration choices, and script complexity. Let's explore the key performance considerations and how to optimize them.
+
+#### **CPU Considerations**
+
+Zeek is CPU-intensive, particularly for protocol parsing and script execution. CPU speed and architecture significantly impact performance.
+
+**CPU requirements scale with:**
+
+- Traffic volume (more packets = more processing)
+- Traffic complexity (application protocols require more parsing than simple TCP)
+- Script complexity (sophisticated detection logic uses more CPU)
+- Enabled features (file extraction, statistical analysis add overhead)
+
+**CPU optimization strategies:**
+
+|Strategy|Impact|When to Use|
+|---|---|---|
+|**Higher clock speed**|Significant|Single-worker deployments|
+|**More cores**|Significant|Cluster deployments|
+|**Modern CPU architecture**|Moderate|New deployments|
+|**Disable unused analyzers**|Moderate|Specialized monitoring|
+|**Optimize scripts**|Variable|Always|
+
+#### **Memory Performance**
+
+Memory speed and capacity affect Zeek's ability to maintain state for large numbers of connections.
+
+**Memory optimization:**
+
+- Use fast RAM (DDR4-3200 or better)
+- Ensure sufficient capacity to avoid swapping (swapping kills performance)
+- Consider memory channels (more channels = better bandwidth)
+
+**Connection timeout tuning:**
+
+One of the most effective ways to control memory usage is adjusting connection timeouts. Zeek expires connection state for inactive connections based on configured timeouts:
+
+```zeek
+# Default timeouts (in /usr/local/zeek/share/zeek/base/init-bare.zeek)
+redef tcp_inactivity_timeout = 5 min;  # TCP connections
+redef udp_inactivity_timeout = 1 min;  # UDP "connections"
+redef icmp_inactivity_timeout = 1 min; # ICMP
+```
+
+**Tuning considerations:**
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│            CONNECTION TIMEOUT TRADE-OFFS                     │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  SHORTER TIMEOUTS (e.g., 1-2 minutes)                        │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━    │
+│  ✓ Lower memory usage                                        │
+│  ✓ Faster state cleanup                                      │
+│  ✗ May prematurely expire legitimate long connections        │
+│  ✗ Could miss attacks that span long periods                 │
+│                                                              │
+│  LONGER TIMEOUTS (e.g., 10-15 minutes)                       │
+│  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━    │
+│  ✓ Complete tracking of long-lived connections               │
+│  ✓ Better detection of persistent threats                    │
+│  ✗ Higher memory usage                                       │
+│  ✗ Slower to reclaim memory from idle connections            │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+For high-volume networks where memory is constrained, shorter timeouts help. For threat hunting where you need to track persistent connections, longer timeouts are better.
+
+#### **Disk I/O Performance**
+
+Logging generates significant disk I/O. On a busy network, Zeek might write several gigabytes of logs per hour.
+
+**Storage recommendations:**
+
+|Storage Type|Performance|Use Case|
+|---|---|---|
+|**NVMe SSD**|Excellent|High-volume logging, logger nodes|
+|**SATA SSD**|Good|Medium-volume logging|
+|**HDD RAID**|Adequate|Archival storage, budget deployments|
+|**Network storage**|Variable|Centralized log storage (watch latency)|
+
+
+
+
+**I/O optimization strategies:**
+
+- Use fast local storage for active logs
+- Rotate logs frequently to prevent huge files
+- Compress and move old logs to slower archival storage
+- Consider separate file systems for logs vs OS
+
+#### **Network Performance**
+
+For cluster deployments, network connectivity between nodes affects performance.
+
+**Network requirements:**
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│             CLUSTER NETWORK REQUIREMENTS                     │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  MANAGEMENT NETWORK (between cluster nodes)                  │
+│  • Minimum: 1 Gbps                                           │
+│  • Recommended: 10 Gbps for large clusters                   │
+│  • Low latency critical for coordination                     │
+│  • Separate from monitored network                           │
+│                                                              │
+│  MONITORING NETWORK (where packets are captured)             │
+│  • Must match or exceed monitored network speed              │
+│  • Often uses SPAN/TAP ports (receive-only)                  │
+│  • No IP configuration needed (promiscuous mode)             │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### **Monitoring Zeek's Performance**
+
+To ensure Zeek is performing well, you need to monitor its health and performance metrics.
+
+**Key metrics to track:**
+
+|Metric|What It Indicates|Warning Threshold|
+|---|---|---|
+|**Packet drop rate**|Can't keep up with traffic|>1%|
+|**Memory usage**|Approaching capacity|>80%|
+|**CPU usage**|Processing load|>80% sustained|
+|**Disk I/O wait**|Storage bottleneck|>10%|
+|**Event queue depth**|Script processing lag|>1000 events|
+
+**Zeek provides performance statistics:**
+
+```bash
+# Check for dropped packets
+zeek-cut ts dropped captured < capture_loss.log
+
+# Monitor Zeek's internal stats
+zeek-cut ts mem event_queue_size < stats.log
+```
+
+
+**Common performance problems and solutions:**
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│           TROUBLESHOOTING PERFORMANCE ISSUES                 │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  SYMPTOM: Dropping packets                                   │
+│  CAUSES: CPU overload, memory exhaustion, network bottleneck │
+│  SOLUTIONS:                                                  │
+│    • Add more workers to cluster                             │
+│    • Optimize or disable expensive scripts                   │
+│    • Increase memory                                         │
+│    • Improve packet acquisition (AF_PACKET, PF_RING)         │
+│                                                              │
+│  SYMPTOM: High memory usage                                  │
+│  CAUSES: Too many concurrent connections, memory leaks       │
+│  SOLUTIONS:                                                  │
+│    • Reduce connection timeouts                              │
+│    • Check scripts for unbounded table growth                │
+│    • Add more memory                                         │
+│    • Implement table expiration policies                     │
+│                                                              │
+│  SYMPTOM: Event queue growing                                │
+│  CAUSES: Slow event handlers blocking processing             │
+│  SOLUTIONS:                                                  │
+│    • Profile scripts to find slow handlers                   │
+│    • Optimize expensive operations                           │
+│    • Remove or disable unused scripts                        │
+│    • Reduce analysis granularity                             │
+│                                                              │
+│  SYMPTOM: High disk I/O wait                                 │
+│  CAUSES: Slow storage, excessive logging                     │
+│  SOLUTIONS:                                                  │
+│    • Upgrade to faster storage (SSD/NVMe)                    │
+│    • Reduce logging verbosity                                │
+│    • Enable log compression                                  │
+│    • Use separate file system for logs                       │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## **PART 4: PRACTICAL EXERCISES**
+
+Now let's apply this architectural knowledge to practical scenarios. These exercises will help you think through deployment decisions and performance considerations.
+
+### **Exercise 1: Design Your Network Architecture**
+
+For this exercise, you're going to design a Zeek deployment for a hypothetical organization. This will help you think through the architectural decisions we've discussed.
+
+**Scenario:**
+
+You're deploying Zeek for a mid-sized company with the following characteristics:
+
+- **Network:** 2 Gbps internet connection, 10 Gbps internal backbone
+- **Endpoints:** 500 workstations, 50 servers
+- **Traffic pattern:** Heavy web browsing, moderate email, some file sharing
+- **Monitoring goals:** Detect C2 traffic, ransomware propagation, data exfiltration
+- **Budget:** Moderate (can afford multiple servers but not enterprise appliances)
+
+**Your task:**
+
+Design a Zeek deployment by answering these questions and creating a diagram:
+
+
+1. **Sensor placement:** Where will you deploy Zeek sensors?
+
+    - At the internet gateway? (captures all external traffic)
+    - On the internal backbone? (captures server-to-server traffic)
+    - Both? (comprehensive but more complex)
+
+   Think about what visibility you need for your detection goals. C2 detection requires seeing outbound traffic. Ransomware propagation detection requires seeing internal traffic.
+
+2. **Cluster vs. single instance:** Will you deploy a cluster or a single Zeek instance?
+
+    - Calculate: 2 Gbps internet + potentially 10 Gbps internal
+    - Consider: A single instance can handle ~1-2 Gbps, so you likely need a cluster
+3. **Cluster design:** If using a cluster, how many nodes of each type?
+
+    - Workers: How many do you need for 2-3 Gbps total?
+    - Manager: How many? (hint: usually just one)
+    - Proxies: Do you need them for this scale?
+    - Logger: How many? Will it be dedicated or combined with manager?
+4. **Hardware specifications:** What specs for each node?
+
+    - Consider CPU, memory, storage based on the formulas we discussed
+    - Think about growth (plan for 50% traffic increase over 2 years)
+5. **Load balancing:** How will you distribute traffic across workers?
+
+    - Hardware load balancer? (expensive but performant)
+    - AF_PACKET fanout? (free but requires multiple workers on same host)
+    - Other approach?
+
+**Deliverable:**
+
+Create a document that includes:
+
+- A network diagram showing where Zeek sensors are placed
+- A cluster architecture diagram showing node types and connections
+- A table of hardware specifications for each node
+- Written justification for your design decisions
+
+Spend at least 30 minutes on this exercise. There's no single "correct" answer-the goal is to think through the trade-offs and design a solution that meets the requirements.
+
+
+
+### **Exercise 2: Plan Sensor Placement for Maximum Visibility**
+
+This exercise focuses specifically on sensor placement strategy, which is often overlooked but critically important.
+
+**Scenario:**
+
+You have the following network topology:
+
+```
+                    Internet
+                       │
+                       ▼
+                 ┌─────────┐
+                 │Firewall │
+                 └────┬────┘
+                      │
+              ┌───────┴───────┐
+              │               │
+              ▼               ▼
+        ┌─────────┐     ┌─────────┐
+        │  DMZ    │     │Internal │
+        │ Servers │     │ Network │
+        └─────────┘     └────┬────┘
+                             │
+                    ┌────────┼────────┐
+                    │        │        │
+                    ▼        ▼        ▼
+               ┌────────┐ ┌────────┐ ┌────────┐
+               │Worksta-│ │Servers │ │ Guest  │
+               │ tions  │ │        │ │ WiFi   │
+               └────────┘ └────────┘ └────────┘
+```
+
+**Your task:**
+
+Decide where to place Zeek sensors to achieve these objectives:
+
+1. **Detect external threats:** C2 traffic, inbound attacks, data exfiltration
+2. **Detect lateral movement:** Compromised workstations attacking servers
+3. **Detect ransomware:** Propagating between workstations
+4. **Monitor DMZ:** Public-facing servers under attack
+
+For each potential sensor placement, consider:
+
+**Placement Option A: Between Internet and Firewall**
+
+- What visibility: All traffic entering/leaving organization
+- What you'll detect: External C2, data exfiltration, inbound attacks
+- What you'll miss: Internal lateral movement, workstation-to-workstation attacks
+- Traffic volume: All internet traffic (could be high)
+- Not great since it is pre-NAT, unable to distinguish between different internal target hosts
+
+**Placement Option B: Behind Firewall on Internal Network**
+
+- What visibility: All internal traffic
+- What you'll detect: Lateral movement, internal reconnaissance, ransomware spread
+- Traffic volume: Potentially very high (all internal communications)
+
+**Placement Option C: DMZ segment**
+
+- What visibility: Traffic to/from DMZ servers
+- What you'll detect: Attacks against public services, compromised DMZ servers
+- What you'll miss: Most internal activity, direct workstation threats
+- Traffic volume: Moderate
+
+**Placement Option D: Multiple sensors (combined approach)**
+
+- What visibility: Comprehensive
+- What you'll detect: Everything
+- What you'll miss: Nothing, but complexity increases
+- Traffic volume: Must handle multiple traffic streams
+
+**Questions to answer:**
+
+1. If you could only deploy ONE sensor, where would you place it and why?
+2. What are the minimum number of sensors needed to meet all four objectives?
+3. For each sensor you propose, estimate the traffic volume it will see
+4. How would your placement strategy change if:
+    - Your primary concern was ransomware detection?
+    - Your primary concern was APT/espionage detection?
+    - You had unlimited budget vs. tight budget?
+
+**Deliverable:**
+
+Write a 1-2 page document explaining:
+
+- Your sensor placement strategy with justifications
+- A diagram showing sensor locations
+- Analysis of what each sensor will and won't see
+- Traffic volume estimates for each sensor
+- How your strategy addresses each of the four objectives
+
+### **Exercise 3: Calculate Resource Requirements**
+
+This exercise helps you practice sizing Zeek deployments based on traffic characteristics.
+
+**Scenario 1: Small Office**
+
+- **Internet bandwidth:** 100 Mbps
+- **Employees:** 50
+- **Peak concurrent connections:** ~2,000
+- **Traffic pattern:** 80% web browsing, 15% email, 5% other
+
+Calculate:
+
+1. How much RAM does Zeek need? (Use the formula from earlier)
+2. How much disk space for logs per day?
+3. How many CPU cores are recommended?
+4. Can this run on a single instance or need a cluster?
+
+**Scenario 2: Medium Enterprise**
+
+- **Internet bandwidth:** 5 Gbps
+- **Employees:** 1,000
+- **Peak concurrent connections:** ~50,000
+- **Traffic pattern:** 60% web, 20% cloud services, 10% email, 10% other
+
+Calculate:
+
+1. How many worker nodes needed?
+2. Total RAM across all workers?
+3. Logger disk space for logs (per day, per week, per month)?
+4. Do you need proxy nodes?
+
+**Scenario 3: Large Data Center**
+
+- **Network bandwidth:** 40 Gbps aggregate
+- **Connections:** ~500,000 concurrent
+- **Traffic pattern:** Mixed (web services, APIs, databases, file storage)
+
+Calculate:
+
+1. How many workers needed?
+2. Is this a candidate for PF_RING?
+3. Total cluster memory requirements?
+4. Logger capacity requirements (assuming 30-day retention)?
+
+**Deliverable:**
+
+Create a spreadsheet or table with your calculations for all three scenarios. Show your work so you understand how you arrived at each number. Include:
+
+- Worker count
+- CPU cores per worker
+- RAM per worker (and total)
+- Storage requirements
+- Any special hardware (load balancers, PF_RING, etc.)
+
+---
+
+
+## **KNOWLEDGE VALIDATION**
+
+Let's test your understanding of the architectural concepts covered in this lesson:
+
+**Question 1: The Processing Pipeline**
+
+Trace the path of a single HTTP packet through Zeek's architecture. Start from "packet arrives at network interface" and describe each stage it passes through, what happens at each stage, and what output is ultimately produced. This tests your understanding of the complete pipeline.
+
+**Question 2: Event-Driven vs. Packet-Based**
+
+Explain why Zeek's event-driven architecture is better suited for detecting C2 beaconing than packet-by-packet analysis. Think about what information is available at the event level that isn't available when examining individual packets.
+
+**Question 3: Cluster Roles**
+
+You're deploying a 15-worker Zeek cluster. Do you need proxy nodes? Why or why not? What factors would influence this decision? This tests your understanding of when proxies provide value.
+
+**Question 4: Memory Management**
+
+Your Zeek sensor is using 16 GB of RAM to monitor a 2 Gbps network with approximately 50,000 concurrent connections. Is this reasonable? If you needed to reduce memory usage, what configuration changes could you make? This tests your ability to apply the memory sizing formulas and understand tuning options.
+
+**Question 5: Performance Troubleshooting**
+
+You notice your Zeek sensor is dropping 5% of packets. What are the three most likely causes, and what would you check to diagnose each one? How would you fix each problem? This tests your understanding of performance bottlenecks.
+
+**Question 6: Sensor Placement**
+
+You want to detect lateral movement (compromised workstations attacking internal servers). Should you place your Zeek sensor at the internet gateway or on the internal network? Justify your answer. This tests your understanding of how sensor placement affects visibility.
+
+Take time to think through these questions. If you're unsure about any of them, review the relevant sections before moving on.
+
+---
+
+## **PREPARING FOR LESSON 1.3**
+
+Congratulations! You've completed the architecture deep dive and now have a comprehensive understanding of how Zeek works internally. Let's summarize what you've learned and prepare for the next lesson.
+
+**What You've Mastered:**
+
+You now understand Zeek's complete processing pipeline, from packet acquisition through protocol analysis to event generation and script execution. You've learned why the event-driven architecture enables behavioural analysis that would be impossible with packet-level inspection. You understand how Zeek maintains rich state about connections and protocols, providing the context necessary for sophisticated threat detection.
+
+You've explored Zeek's cluster architecture, understanding how multiple nodes work together to analyze high-bandwidth networks. You know the roles of workers, managers, proxies, and loggers, and how they coordinate through the Broker communication framework. You understand load balancing strategies and can design cluster deployments for different scales and requirements.
+
+You've learned about memory management and performance optimization, understanding how Zeek uses memory, how to size deployments appropriately, and how to tune configuration for optimal performance. You can diagnose performance problems and understand the trade-offs in different optimization strategies.
+
+Most importantly, you've applied this knowledge through practical exercises, designing network architectures, planning sensor placements, and calculating resource requirements. These are the skills you'll use when deploying Zeek in real environments.
+
+**What's Coming in Lesson 1.3:**
+
+In the next lesson, we're moving from theory to hands-on practice. You're going to install Zeek on your Ubuntu droplet, going through the complete installation and configuration process. We'll cover three different installation methods (package manager, source compilation, and containers) so you understand the trade-offs and can choose the right approach for different scenarios.
+
+You'll configure network interfaces for monitoring, set up AF_PACKET for improved performance, and make your first captures of network traffic. You'll learn to start and stop Zeek, monitor its operation, and troubleshoot common issues. By the end of Lesson 1.3, you'll have a fully functional Zeek sensor capturing and analyzing traffic.
+
+**Before the Next Lesson:**
+
+Make sure your Digital Ocean droplet is ready. If you haven't created it yet, do so now:
+
+- Ubuntu 22.04 LTS
+- At least 4 vCPUs
+- At least 8 GB RAM
+- At least 80 GB storage
+- Note the IP address for SSH access
+
+Think about what network traffic you'll analyze. Do you have:
+
+- A home network you can monitor?
+- Lab VMs you can use to generate traffic?
+- Sample PCAP files for analysis?
+
+Having traffic to analyze will make the next lesson much more engaging than just installing software.
+
+Review your notes from this lesson, especially the cluster architecture and performance tuning sections. This knowledge will inform the configuration choices you make during installation.
+
+**Final Thought:**
+
+Architecture might seem like dry material, but it's the foundation everything else is built on. When you're writing detection scripts in later modules and wondering why something works the way it does, you'll refer back to this architectural knowledge. When you're troubleshooting a production issue, understanding the architecture will help you diagnose and fix it quickly. The time you've invested understanding Zeek's internals will pay dividends throughout your career.
+
+Take a break, let this knowledge settle, and when you're ready, we'll dive into Lesson 1.3 and get our hands dirty with an actual Zeek installation!
+
+---
+
+
+
+
+
+
 
 
 
