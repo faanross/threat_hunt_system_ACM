@@ -8,7 +8,10 @@
 - [Investigating Ports](./general/01_ports.md)
 - [Investigating Domains](./general/02_domains.md)
 - [Investigating Certificates](./general/03_certs.md)
-- [Investigating Binaries](./general/04_binaries.md)
+
+## Investigating Potentially Suspicious Binaries
+- [Philosophy + Approach](./binaries/philosophy.md)
+- [The Seven Critical Indicators](./binaries/framework.md)
 
 ## Beaconing Behaviour
 - [Introduction to Histograms](./beacon/00_histograms.md)
@@ -52,6 +55,7 @@ TODO
 ## Extended Toolbox
 - Zui
 - [WireShark](./core/wireshark/moc.md)
+- PEBear
 
 ## Open-Source C2 Framework Guide
 - [AdaptixC2](./c2s/adaptix/moc.md)

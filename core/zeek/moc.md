@@ -3,8 +3,6 @@
 
 
 
-## Courses
-[The Complete Zeek Scripting Course for Network Threat Hunting](./courses/scripting/moc.md)
 
 ___
 
