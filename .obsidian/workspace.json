@@ -1,0 +1,212 @@
+{
+  "main": {
+    "id": "47a8ace15f454590",
+    "type": "split",
+    "children": [
+      {
+        "id": "abcb9cac2a0e9ae4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f6cbb66a0dca67d8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "core/zeek/courses/scripting/01_foundations/1_1_ecosystem.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "1_1_ecosystem"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "94962577094d122e",
+    "type": "split",
+    "children": [
+      {
+        "id": "4cb209e039acbc0f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e2f478cbd70257af",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "44e98539b9b6ff8f",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "31e66ca48d3a5595",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "70d8c57e6e1a5c6f",
+    "type": "split",
+    "children": [
+      {
+        "id": "7c29e19cf3d2e779",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f1c4c7f3f3c184a0",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "core/zeek/courses/scripting/01_foundations/1_1_ecosystem.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for 1_1_ecosystem"
+            }
+          },
+          {
+            "id": "cbe771392806b85d",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "07_c2s/adaptix/moc.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from moc"
+            }
+          },
+          {
+            "id": "e1be5c6e80afe1fe",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "a5aee446afc85d76",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "core/zeek/courses/scripting/01_foundations/1_1_ecosystem.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of 1_1_ecosystem"
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false,
+      "obsidian-git:Open Git source control": false
+    }
+  },
+  "active": "a5aee446afc85d76",
+  "lastOpenFiles": [
+    "core/zeek/courses/scripting/01_foundations/1_2_architecture.md",
+    "core/wireshark/moc.md",
+    "core/suricata/03_config.md",
+    "core/suricata/01_why.md",
+    "c2s/adaptix/moc.md",
+    "beacon/05_jitter.md",
+    "beacon/04_beacon.md",
+    "general/02_domains.md",
+    "core/zeek/courses/scripting/01_foundations/1_1_ecosystem.md",
+    "core/suricata/02_install.md",
+    "core/suricata/00_intro.md",
+    "core/ach/moc.md",
+    "general/04_binaries.md",
+    "general/01_ports.md",
+    "introduction/01_system.md",
+    "introduction/02_setup.md",
+    "introduction/00_goal.md",
+    "07_c2s/adaptix/moc.md",
+    "introduction",
+    "general/03_certs.md",
+    "general/00_ips.md",
+    "general",
+    "core/zeek/courses/scripting/moc.md",
+    "core/zeek/courses/scripting/01_foundations",
+    "core/zeek/courses/scripting",
+    "core/zeek/moc.md",
+    "core/zeek/courses",
+    "core/wel_logs/moc.md",
+    "core/sysmon/moc.md",
+    "core/sysmon/02_install.md",
+    "core/sysmon/01_why.md",
+    "core/zeek",
+    "core/wireshark",
+    "core/wel_logs",
+    "core/sysmon",
+    "core/sysinformer"
+  ]
+}

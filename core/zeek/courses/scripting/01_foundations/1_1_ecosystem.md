@@ -139,7 +139,7 @@ The typical deployment pattern is to use Zeek for continuous monitoring and auto
 
 ### **Zeek and SIEM: Complementary Components of a Security Architecture**
 
-Perhaps the most important relationship to understand is between Zeek and Security Information and Event Management (SIEM) platforms like Splunk, Elastic Stack, or commercial solutions like QRadar and ArcSight. This relationship is often misunderstood, with people sometimes asking whether they should deploy Zeek or a SIEM. The answer is that they serve fundamentally different purposes and are most powerful when used together.
+Perhaps the most important relationship to understand is between Zeek and Security Information and Event Management (SIEM) platforms like Splunk, Elastic Stack, QRadar, ArcSight and others. This relationship is often misunderstood, with people sometimes asking whether they should deploy Zeek or a SIEM. The answer is that they serve fundamentally different purposes and are most powerful when used together.
 
 A SIEM platform is designed to aggregate security data from many different sources across your environment - firewalls, intrusion detection systems, endpoint security tools, authentication logs, application logs, and more. The SIEM normalizes this data into common formats, stores it in a searchable database, provides correlation capabilities to identify patterns across different data sources, and offers dashboards and alerting to help analysts make sense of it all.
 
