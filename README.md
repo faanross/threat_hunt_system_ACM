@@ -12,6 +12,8 @@
 ## Investigating Potentially Suspicious Binaries
 - [Philosophy + Approach](./binaries/philosophy.md)
 - [The Seven Critical Indicators](./binaries/framework.md)
+- [The Active-Passive Line](./binaries/active_passive.md)
+- [Investigation Workflow](./binaries/workflow.md)
 
 ## Beaconing Behaviour
 - [Introduction to Histograms](./beacon/00_histograms.md)
