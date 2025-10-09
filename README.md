@@ -9,11 +9,12 @@
 - [Investigating Domains](./general/02_domains.md)
 - [Investigating Certificates](./general/03_certs.md)
 
-## Investigating Potentially Suspicious Binaries
+## Investigating Processes + Binaries
 - [Philosophy + Approach](./binaries/philosophy.md)
 - [The Active-Passive Line](./binaries/active_passive.md)
 - [The Five Critical Indicators](./binaries/framework.md)
 - [Investigation Workflow](./binaries/workflow.md)
+- [Indicator 1 - Binary Location](./binaries/location.md)
 
 
 
@@ -43,8 +44,6 @@ TODO
 ## Investigating C2 Agent-to-Agent Communication
 TODO
 
-## Investigating Endpoints
-TODO
 
 ## Core Toolbox
 - [RITA](./core/rita/moc.md)
