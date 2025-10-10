@@ -1,6 +1,15 @@
-## Introduction
+## General Introduction to Threat Hunting
+- [What is Threat Hunting](./thunt/what_is.md)
+- [Historical Context and Evolution](./thunt/history.md)
+- [The Philosophy of Assumed Breach](./thunt/breach.md)
+
+
+
+## Introduction to Network-Centric Threat Hunting
 - [Goal](./introduction/00_goal.md)
 - [Overview of System](./introduction/01_system.md)
+
+## What Are We Looking For (Hunting's Target)
 - Introduction to Malware Communication
 
 
