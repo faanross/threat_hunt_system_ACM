@@ -275,69 +275,166 @@ Path: C:\Windows\Temp\svchost.exe
 ```
 
 
-### VAD Types: Understanding Memory Categories
+### Program Files Directories
 
-Not all memory is created equal. The kernel categorizes memory regions into different **VAD types** based on their purpose and backing store.
+#### **Standard Installation Locations:**
 
-#### The Four Primary VAD Types
+- `C:\Program Files\`
+- `C:\Program Files (x86)\` (for 32-bit applications on 64-bit systems)
+
+These directories represent the standard installation location for applications. Writing to these directories requires administrator privileges, which means files here typically arrived through a proper installation process.
+
+Executables in Program Files should exhibit certain characteristics:
+
+**Vendor Folder Organization:** Legitimate software is organized by vendor and product. You should see paths like `C:\Program Files\Google\Chrome\Application\chrome.exe` or `C:\Program Files\Microsoft Office\Office16\WINWORD.EXE`.
+
+**Recognizable Vendor Names:** The vendor folder name should be identifiable. Google, Microsoft, Adobe, Mozilla - these are recognized software vendors. Unknown or generic vendor names warrant verification.
+
+**Digital Signatures:** Software in Program Files should be digitally signed by the vendor. While not all legitimate software is signed, most commercial software is.
+
+**Proper File Structure:** The installation should include appropriate supporting files - DLLs, configuration files, resources - organized in a coherent structure.
+
+
+
+However, don't assume everything in Program Files is automatically safe. Consider these scenarios:
+
+**Supply Chain Attacks:** Legitimate software can be compromised through malicious updates. A legitimate program in Program Files might download and execute malicious components.
+
+**Legitimate but Exploited:** Vulnerable legitimate applications can be exploited to execute malicious code. The application itself is genuine and properly installed, but it's being abused.
+
+**Living-Off-the-Land Binaries (LOLBins):** Legitimate Windows utilities in Program Files or System32 can be abused for malicious purposes. The binary is genuine and in the right location, but it's being used in an unusual way (examined through command line analysis, not location).
+
+
+## Context is Critical: Combining Location with Process Name
+
+Location analysis becomes most powerful when you evaluate it in combination with the process name, which is our 2nd indicator. We'll explore it greater depth in its own dedicated section, for now it's worth touching on the revealing relationship between these two indicators here.
+
+The principle is simple: **the combination of process name and location must make sense together.**
+
+
+
+### Understanding Legitimate Patterns
+
+Each type of process has expected locations:
+
+**Windows System Processes** should only run from System32 or Windows directories:
+
+- `svchost.exe` → `C:\Windows\System32\`
+- `explorer.exe` → `C:\Windows\`
+- `lsass.exe` → `C:\Windows\System32\`
+- `services.exe` → `C:\Windows\System32\`
+
+**Installed Applications** should run from Program Files:
+
+- `chrome.exe` → `C:\Program Files\Google\Chrome\Application\`
+- `WINWORD.EXE` → `C:\Program Files\Microsoft Office\`
+- `Acrobat.exe` → `C:\Program Files\Adobe\Acrobat DC\`
+
+**User-Installed Applications** might run from AppData with proper vendor structure:
+
+- `Teams.exe` → `C:\Users\[user]\AppData\Local\Microsoft\Teams\`
+- `Discord.exe` → `C:\Users\[user]\AppData\Local\Discord\`
+
+### Detecting Masquerading Through Location Mismatch
+
+When the process name and location don't align with expected patterns, you've likely identified masquerading malware. Let's examine common patterns:
+
+**Example 1**
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         VAD TYPE MATRIX                         │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  Type        │ Backed By         │ Common Uses                  │
-│  ───────────────────────────────────────────────────────────────│
-│  PRIVATE     │ Pagefile/RAM only │ • Heap allocations           │
-│              │                   │ • Stack memory               │
-│              │                   │ • VirtualAlloc() calls       │
-│              │                   │ • Process-specific data      │
-│              │                   │                              │
-│  IMAGE       │ PE files on disk  │ • Executable files (.exe)    │
-│              │                   │ • DLL files loaded           │
-│              │                   │ • Code sections (.text)      │
-│              │                   │ • Shareable across processes │
-│              │                   │                              │
-│  MAPPED      │ Regular files     │ • Memory-mapped files        │
-│              │                   │ • Database files             │
-│              │                   │ • Large data files           │
-│              │                   │ • Inter-process data sharing │
-│              │                   │                              │
-│  SHAREABLE   │ Shared memory     │ • Named shared memory        │
-│              │                   │ • IPC mechanisms             │
-│              │                   │ • Multiple processes access  │
-│              │                   │                              │
-└─────────────────────────────────────────────────────────────────┘
+LEGITIMATE:
+Name: svchost.exe
+Path: C:\Windows\System32\svchost.exe
+Parent: services.exe
+User: SYSTEM
+→ All indicators align correctly
+
+MALICIOUS:
+Name: svchost.exe
+Path: C:\Users\john\AppData\Local\Temp\svchost.exe
+Parent: outlook.exe
+User: john.doe
+→ Multiple misalignments:
+   - Wrong location (should be System32)
+   - Wrong parent (should be services.exe)
+   - Wrong user (should be SYSTEM)
+→ Assessment: Masquerading malware
 ```
 
-##### **Private VADs:**
 
-- Most common type for dynamic allocations
-- Backed by the page file (virtual memory) when paged out
-- Each process has its own copy - no sharing
-- Examples: `malloc()`, new, `HeapAlloc()`, `VirtualAlloc()` with no file mapping
+**Example 2**
 
-##### **Image VADs:**
+```
+LEGITIMATE:
+Name: dllhost.exe
+Path: C:\Windows\System32\dllhost.exe
+Parent: svchost.exe
+User: SYSTEM or LOCAL SERVICE
+→ Expected pattern for COM Surrogate
 
-- Represent PE executable files loaded into memory
-- Backed by the actual .exe or .dll file on disk
-- Can be shared across processes (same `kernel32.dll` mapped into many processes)
-- Sections have different protections (`.text` is R-X, `.data` is RW-)
+MALICIOUS:
+Name: dllhost.exe
+Path: C:\ProgramData\dllhost.exe
+Parent: explorer.exe
+User: john.doe
+→ Wrong location (should be System32)
+→ Wrong parent (should be svchost.exe)
+→ Assessment: Masquerading malware
+```
 
-##### **Mapped VADs:**
 
-- Created by `CreateFileMapping()` + `MapViewOfFile()`
-- Backed by a regular file on disk
-- Changes can be written back to the file (or not, depending on flags)
-- Efficient way to work with large files without loading entirely into RAM
+## Investigation Steps
 
-##### **Shareable VADs:**
+**Step 1: Identify the Full Path**
 
-- Explicitly shared between multiple processes
-- Often used for inter-process communication
-- Created with PAGE_READWRITE and proper sharing flags
-- Multiple processes can read/write the same physical memory
+Extract the complete file system path to the executable. Sysmon Event ID 1 includes the "Image" field with the complete path, WEL 4688 also captures this information.
 
+**Step 2: Assess Privilege Requirements**
+
+Determine whether the location requires administrator privileges to write to. This tells you about the attacker's access level:
+
+- `C:\Windows\System32\`, `C:\Program Files\` → Requires admin privileges
+- `C:\Users\[user]\AppData\`, `C:\Users\[user]\Downloads\` → User-writable
+- `C:\ProgramData\`, `C:\Users\Public\` → Often user-writable or world-writable
+
+**Step 3: Compare Process Name to Expected Location**
+
+Does the process name match what you'd expect at this location?
+
+- Core Windows processes → Should be in System32
+- Commercial software → Should be in Program Files with vendor folder
+- User applications → Might be in AppData with vendor structure
+
+**Step 4: Evaluate Folder Structure**
+
+Is the executable part of a proper folder hierarchy, or is it dropped directly into a parent directory?
+
+- Legitimate: `C:\ProgramData\Vendor\Product\executable.exe`
+- Suspicious: `C:\ProgramData\executable.exe`
+
+**Step 5: Consider Temporal Context**
+
+When was the file created relative to when it started executing?
+
+- File created months ago, executed recently → Possibly legitimate
+- File created and executed within seconds → Possibly malicious dropper
+- File created days ago but only now executing → Investigate why
+
+**Step 6: Cross-Reference with Other Indicators**
+
+Location analysis doesn't exist in isolation. Cross-reference with other 4 endpoint indicators PLUS network indicators.
+
+## Investigation Checklist
+
+Use this checklist for systematic location analysis:
+
+- [ ] Full file path identified
+- [ ] Location privilege requirements assessed (admin-only vs user-writable)
+- [ ] Process name compared to expected location for that name
+- [ ] Folder structure evaluated (proper vendor hierarchy vs direct parent execution)
+- [ ] Temporal context reviewed (creation time vs execution time)
+- [ ] Process name and location combination assessed for logical consistency
+- [ ] Location findings cross-referenced with other critical indicators
 
 
 

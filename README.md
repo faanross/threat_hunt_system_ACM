@@ -1,7 +1,9 @@
 ## Introduction
 - [Goal](./introduction/00_goal.md)
 - [Overview of System](./introduction/01_system.md)
-- [Experimental Setup](./introduction/02_setup.md)
+- Introduction to Malware Communication
+
+
 
 ## General Investigations
 - [Investigating IP Addresses](./general/00_ips.md)
@@ -15,7 +17,7 @@
 - [The Five Critical Indicators](./binaries/framework.md)
 - [Investigation Workflow](./binaries/workflow.md)
 - [Indicator 1 - Binary Location](./binaries/location.md)
-
+- [Indicator 2 - Process Name](./binaries/name.md)
 
 
 ## Beaconing Behaviour
@@ -44,21 +46,29 @@ TODO
 ## Investigating C2 Agent-to-Agent Communication
 TODO
 
+## Cloud Threat Hunting
+TODO
 
 ## Core Toolbox
 - [RITA](./core/rita/moc.md)
 - [AC-Hunter](./core/ach/moc.md)
 - [Suricata](./core/suricata/moc.md)
 - [Zeek](./core/zeek/moc.md)
-- [System Informer](./core/sysinformer/moc.md)
 - [Sysmon](./core/sysmon/moc.md)
-- [PowerShell SB Logs](./core/ps_sb_logs/moc.md)
-- [WEL](./core/wel_logs/moc.md)
+- [PowerShell ScriptBlock Logs](./core/ps_sb_logs/moc.md)
+
 
 ## Extended Toolbox
 - Zui
 - [WireShark](./core/wireshark/moc.md)
 - PEBear
+- [System Informer](./core/sysinformer/moc.md)
+- [WEL](./core/wel_logs/moc.md)
+
+
+## Threat Hunt Lab Setup
+TODO
+
 
 ## Open-Source C2 Framework Guide
 - [AdaptixC2](./c2s/adaptix/moc.md)
@@ -68,9 +78,8 @@ TODO
 - [Sliver]
 - [Empire(BC)]
 
-...
 
 
 ## Import Links + References
 - [DFIR Report](https://thedfirreport.com)
-
+- [Malware Traffic Analysis](https://www.malware-traffic-analysis.net)
