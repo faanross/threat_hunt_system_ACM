@@ -2,6 +2,7 @@
 - [What is Threat Hunting](./thunt/what_is.md)
 - [Historical Context and Evolution](./thunt/history.md)
 - [The Philosophy of Assumed Breach](./thunt/breach.md)
+- [Threat Hunting vs. Other Security Functions](./thunt/other.md)
 
 
 
