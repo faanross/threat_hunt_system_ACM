@@ -144,3 +144,15 @@ The table below maps each event type to common adversary techniques and threat h
 - **C2 (Command and Control)** - Communication with attacker infrastructure
 - **Exfiltration** - Stealing data from the environment
 - **Process Injection** - Injecting code into other processes
+
+### Key Takeaways
+
+As we dive into each event type in the following chapters, keep these principles in mind:
+
+1. **Start with the universal events** (1, 3, 11, 13, 22) - they provide the most consistent value across diverse threat scenarios.
+2. **Layer in specialized events** based on your threat model - if you're concerned about Cobalt Strike, prioritize Event IDs 17/18. If ransomware is your focus, Event ID 23 (FileDelete) becomes critical.
+3. **Context matters** - Individual events are data points; sequences of events tell stories. A process creation (ID 1) followed by a network connection (ID 3) to a suspicious IP tells you much more than either event alone.
+4. **Volume vs. value varies by event type** - Event ID 7 (Image Loaded) generates massive volume but requires careful filtering. Event ID 8 (CreateRemoteThread) is rare but almost always interesting.
+5. **Your configuration determines what you see** - Sysmon only logs what you tell it to. A poorly configured Sysmon deployment might miss critical event types entirely or drown you in noise from overly permissive rules.
+
+In the sections that follow, we'll examine each event type in detail: what it captures, how to configure it effectively, what attacker techniques it detects, and how to use it in threat hunting. By the end, you'll have a comprehensive understanding of the full Sysmon telemetry spectrum and how to wield it for effective threat detection and response.
