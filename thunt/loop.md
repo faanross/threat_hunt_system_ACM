@@ -173,3 +173,11 @@ Documenting these baselines has multiple benefits. Future hunters can reference 
 Some organizations maintain formal "normal behavior" documentation, while others rely on tribal knowledge and informal notes. Either approach works, but documented knowledge scales better as teams grow and personnel change.
 
 
+
+### Sharing Knowledge
+
+Hunting knowledge should be shared both within your organization and, where appropriate, with the broader security community. Internally, regular threat hunting briefings keep SOC teams, incident responders, and security leadership informed about hunting activities, findings, and capabilities.
+
+When hunters discover new techniques, novel indicators, or effective investigation approaches, sharing these with the security community (through blog posts, conference presentations, or threat intelligence sharing platforms) raises the bar for all defenders. Obviously, you must sanitize organizational details and avoid revealing information that could harm your security posture, but sharing TTPs and detection strategies helps everyone.
+
+This knowledge sharing also builds your hunters' professional reputations and contributes to career development - important factors in retaining skilled personnel.
