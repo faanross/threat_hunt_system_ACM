@@ -3,6 +3,7 @@
 - [Historical Context and Evolution](./thunt/history.md)
 - [The Philosophy of Assumed Breach](./thunt/breach.md)
 - [Threat Hunting vs. Other Security Functions](./thunt/other.md)
+- [The Threat Hunting Loop and Core Workflow](./thunt/loop.md)
 
 
 
