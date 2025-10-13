@@ -5,6 +5,7 @@
 - [Threat Hunting vs. Other Security Functions](./thunt/other.md)
 - [The Threat Hunting Loop and Core Workflow](./thunt/loop.md)
 - [Threat Hunting Frameworks and Methodologies](./thunt/frameworks.md)
+- [The Threat Hunting Maturity Model](./thunt/maturity.md)
 
 
 
