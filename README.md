@@ -8,6 +8,20 @@
 - [The Threat Hunting Maturity Model](./thunt/maturity.md)
 - [Organizational Readiness and Prerequisites](./thunt/readiness.md)
 - [The Pyramid of Pain and Hunting Focus Areas](./thunt/pyramid.md)
+- [Signatures vs. Behaviours: The Hunter's Mindset](./thunt/mindset.md)
+- [Network-Based vs. Endpoint-Based Threat Hunting]
+- [Asset Management and Environmental Knowledge]
+- [Data Sources and Telemetry Requirements]
+- [The Role of Threat Intelligence in Hunting]
+- [Threat Hunting and Detection Engineering A Symbiotic Relationship]
+- [Machine Learning and AI in Threat Hunting]
+- [Challenges of Implementing Threat Hunting at Scale]
+- [Triage and Prioritization Strategies]
+- [Measuring Threat Hunting Effectiveness]
+- [Building and Sustaining a Hunting Culture]
+- [Legal, Privacy, and Ethical Considerations]
+- [The Future of Threat Hunting]
+
 
 
 
@@ -17,7 +31,8 @@
 - [Goal](./introduction/00_goal.md)
 - [Overview of System](./introduction/01_system.md)
 
-## What Are We Looking For (Hunting's Target)
+
+## What Are We Looking For - Malware Network Communication
 - Introduction to Malware Communication
 
 
