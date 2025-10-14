@@ -14,5 +14,5 @@ Understanding the Pyramid of Pain transforms how you approach threat hunting. It
 
 The Pyramid of Pain visualizes different types of adversary indicators arranged by how much "pain" (difficulty, cost, operational impact) changing them causes adversaries:
 
-[!pyramid_of_pain](./img/pyramid.png)
+![pyramid_of_pain](./img/pyramid.png)
 
