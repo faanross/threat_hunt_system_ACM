@@ -7,6 +7,7 @@
 - [Threat Hunting Frameworks and Methodologies](./thunt/frameworks.md)
 - [The Threat Hunting Maturity Model](./thunt/maturity.md)
 - [Organizational Readiness and Prerequisites](./thunt/readiness.md)
+- [The Pyramid of Pain and Hunting Focus Areas](./thunt/pyramid.md)
 
 
 
