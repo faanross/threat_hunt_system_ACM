@@ -9,7 +9,7 @@
 - [Organizational Readiness and Prerequisites](./thunt/readiness.md)
 - [The Pyramid of Pain and Hunting Focus Areas](./thunt/pyramid.md)
 - [Signatures vs. Behaviours: The Hunter's Mindset](./thunt/mindset.md)
-- [Network-Based vs. Endpoint-Based Threat Hunting]
+- [Network-Based vs. Endpoint-Based Threat Hunting](./thunt/net_vs_end.md)
 - [Asset Management and Environmental Knowledge]
 - [Data Sources and Telemetry Requirements]
 - [The Role of Threat Intelligence in Hunting]
