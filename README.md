@@ -10,8 +10,8 @@
 - [The Pyramid of Pain and Hunting Focus Areas](./thunt/pyramid.md)
 - [Signatures vs. Behaviours: The Hunter's Mindset](./thunt/mindset.md)
 - [Network-Based vs. Endpoint-Based Threat Hunting](./thunt/net_vs_end.md)
-- [Asset Management and Environmental Knowledge]
-- [Data Sources and Telemetry Requirements]
+- [Asset Inventory and Environmental Knowledge](./thunt/asset.md)
+- [Data Sources and Telemetry Requirements](./thunt/data.md)
 - [The Role of Threat Intelligence in Hunting]
 - [Threat Hunting and Detection Engineering A Symbiotic Relationship]
 - [Machine Learning and AI in Threat Hunting]
