@@ -12,7 +12,7 @@
 - [Network-Based vs. Endpoint-Based Threat Hunting](./thunt/net_vs_end.md)
 - [Asset Inventory and Environmental Knowledge](./thunt/asset.md)
 - [Data Sources and Telemetry Requirements](./thunt/data.md)
-- [The Role of Threat Intelligence in Hunting]
+- [The Role of Threat Intelligence in Hunting](./thunt/intelligence.md)
 - [Threat Hunting and Detection Engineering A Symbiotic Relationship]
 - [Machine Learning and AI in Threat Hunting]
 - [Challenges of Implementing Threat Hunting at Scale]
