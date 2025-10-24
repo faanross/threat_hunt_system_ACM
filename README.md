@@ -102,14 +102,6 @@ TODO
 TODO
 
 
-## Open-Source C2 Framework Guide
-- [AdaptixC2](./c2s/adaptix/moc.md)
-- [Merlin]
-- [Mythic]
-- [Havoc]
-- [Sliver]
-- [Empire(BC)]
-
 
 
 ## Import Links + References
