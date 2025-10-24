@@ -35,6 +35,17 @@
 ## What Are We Looking For - Malware Network Communication
 - Introduction to Malware Communication
 
+### Beaconing Behaviour
+- [Introduction to Histograms](./beacon/00_histograms.md)
+- [Connection Interval Histogram](./beacon/01_histograms_interval.md)
+- [Connection Size Histogram](./beacon/02_histograms_size.md)
+- [Hourly-Connection Graph](./beacon/03_hourly.md)
+- [Beaconing](./beacon/04_beacon.md)
+- [Jitter](./beacon/05_jitter.md)
+- [Data Jitter](./beacon/06_data_jitter.md)
+
+
+
 
 
 ## General Investigations
@@ -52,16 +63,6 @@
 - [Indicator 2 - Process Name](./binaries/name.md)
 
 
-## Beaconing Behaviour
-- [Introduction to Histograms](./beacon/00_histograms.md)
-- [Connection Interval Histogram](./beacon/01_histograms_interval.md)
-- [Connection Size Histogram](./beacon/02_histograms_size.md)
-- [Hourly-Connection Graph](./beacon/03_hourly.md)
-- [Beaconing](./beacon/04_beacon.md)
-- [Jitter](./beacon/05_jitter.md)
-- [Data Jitter](./beacon/06_data_jitter.md)
-
-
 
 ## Investigating C2 over HTTP/S
 TODO
@@ -69,11 +70,6 @@ TODO
 ## Investigating C2 over DNS
 TODO
 
-## Investigating C2 over ICMP
-TODO
-
-## Investigating C2 over NTP
-TODO
 
 ## Investigating C2 Agent-to-Agent Communication
 TODO
@@ -82,12 +78,12 @@ TODO
 TODO
 
 ## Core Toolbox
+- [Zeek](./core/zeek/moc.md)
+- [Sysmon](./core/sysmon/moc.md)
 - [RITA](./core/rita/moc.md)
 - [AC-Hunter](./core/ach/moc.md)
 - [Suricata](./core/suricata/moc.md)
-- [Zeek](./core/zeek/moc.md)
-- [Sysmon](./core/sysmon/moc.md)
-- [PowerShell ScriptBlock Logs](./core/ps_sb_logs/moc.md)
+
 
 
 ## Extended Toolbox
@@ -96,6 +92,7 @@ TODO
 - PEBear
 - [System Informer](./core/sysinformer/moc.md)
 - [WEL](./core/wel_logs/moc.md)
+- [PowerShell ScriptBlock Logs](./core/ps_sb_logs/moc.md)
 
 
 ## Threat Hunt Lab Setup
