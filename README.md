@@ -13,7 +13,7 @@
 - [Asset Inventory and Environmental Knowledge](./thunt/asset.md)
 - [Data Sources and Telemetry Requirements](./thunt/data.md)
 - [The Role of Threat Intelligence in Hunting](./thunt/intelligence.md)
-- [Threat Hunting and Detection Engineering A Symbiotic Relationship]
+- [Threat Hunting and Detection Engineering A Symbiotic Relationship](./thunt/detection.md)
 - [Machine Learning and AI in Threat Hunting]
 - [Challenges of Implementing Threat Hunting at Scale]
 - [Triage and Prioritization Strategies]
