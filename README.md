@@ -14,8 +14,8 @@
 - [Data Sources and Telemetry Requirements](./thunt/data.md)
 - [The Role of Threat Intelligence in Hunting](./thunt/intelligence.md)
 - [Threat Hunting and Detection Engineering A Symbiotic Relationship](./thunt/detection.md)
-- [Machine Learning and AI in Threat Hunting]
-- [Challenges of Implementing Threat Hunting at Scale]
+- [Machine Learning and AI in Threat Hunting](./thunt/ml.md)
+- [The Scaling Paradox: Challenges of Implementing Threat Hunting at Scale](./thunt/scaling.md)
 - [Triage and Prioritization Strategies]
 - [Measuring Threat Hunting Effectiveness]
 - [Building and Sustaining a Hunting Culture]
