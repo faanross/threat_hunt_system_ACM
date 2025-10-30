@@ -16,7 +16,7 @@
 - [Threat Hunting and Detection Engineering A Symbiotic Relationship](./thunt/detection.md)
 - [Machine Learning and AI in Threat Hunting](./thunt/ml.md)
 - [Challenges of Implementing Threat Hunting at Scale](./thunt/scaling.md)
-- [Triage and Prioritization Strategies]
+- [Triage and Prioritization Strategies](./thunt/triage.md)
 - [Measuring Threat Hunting Effectiveness]
 - [Building and Sustaining a Hunting Culture]
 - [Legal, Privacy, and Ethical Considerations]
