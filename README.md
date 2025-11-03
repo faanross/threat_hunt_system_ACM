@@ -18,7 +18,7 @@
 - [Challenges of Implementing Threat Hunting at Scale](./thunt/scaling.md)
 - [Triage and Prioritization Strategies](./thunt/triage.md)
 - [Measuring Threat Hunting Effectiveness](./thunt/measure.md)
-- [Building and Sustaining a Hunting Culture]
+- [Building and Sustaining a Hunting Culture](./thunt/culture.md)
 - [Legal, Privacy, and Ethical Considerations]
 - [The Future of Threat Hunting]
 
