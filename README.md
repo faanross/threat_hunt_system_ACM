@@ -7,7 +7,7 @@
 - [Threat Hunting Frameworks and Methodologies](./thunt/frameworks.md)
 - [The Threat Hunting Maturity Model](./thunt/maturity.md)
 - [Organizational Readiness and Prerequisites](./thunt/readiness.md)
-- [The Pyramid of Pain and Hunting Focus Areas](./thunt/pyramid.md)
+- [Hunt What Hurts: The Pyramid of Pain](./thunt/pyramid.md)
 - [Signatures vs. Behaviours: The Hunter's Mindset](./thunt/mindset.md)
 - [Network-Based vs. Endpoint-Based Threat Hunting](./thunt/net_vs_end.md)
 - [Asset Inventory and Environmental Knowledge](./thunt/asset.md)
